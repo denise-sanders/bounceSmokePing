@@ -1,0 +1,5 @@
+- hosts: slaves 
+  gather_facts: false
+  roles:
+    - bounceSmokePing
+

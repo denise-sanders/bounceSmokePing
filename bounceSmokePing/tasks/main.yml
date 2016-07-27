@@ -1,0 +1,27 @@
+---
+# tasks file for bounceSmokePing
+# The proper technique seems to be killing all the smokeping processes, stopping the service, and starting the service.
+
+- name: make sure killall is installed
+  apt: name=psmisc state=present
+
+- name: Kill all the previous smokeping processes
+  command: killall -r smoke
+  ignore_errors: yes # If no, it  MUST kill a process or it will fail
+
+- name: Stop smokeping service
+  command: /etc/init.d/smokeping stop
+
+- name: Start smokeping servnce
+  command: /etc/init.d/smokeping start
+
+- name: Check on new process
+  command: pgrep smoke
+  changed_when: false
+  register: smokeping_status
+
+- name: process smokeping status
+  fail:
+    msg: Smokeping failed to start. Check syslog for more details.
+  when: smokeping_status.rc != 0
+ 
